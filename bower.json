@@ -1,0 +1,23 @@
+{
+    "name": "calculator",
+    "description": "Web-calculator with AngularJS",
+    "authors": [
+        "Nikolai Khilkovsky <khilkovn@gmail.com>"
+    ],
+    "homepage": "https://github.com/NikolaiKhilkovsky/calculator",
+    "private": true,
+    "ignore": [
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "dependencies": {
+        "less": "2.5.x",
+        "angular": "1.4.x"
+    },
+    "devDependencies": {
+        "karma": "^0.4.6",
+        "karma-chrome-launcher": "^0.1.4",
+        "karma-jasmine": "~0.1.0"
+    }
+}

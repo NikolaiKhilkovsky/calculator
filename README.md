@@ -1,3 +1,3 @@
 # My calculator
 
-The simple online calculator on http://calculator.nikko.pp.ua
+The online calculator with Angular.js on http://calculator.nikko.pp.ua

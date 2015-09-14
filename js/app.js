@@ -155,7 +155,7 @@
                 if (this._checkExp(exp)) {
                     res = result.update(exp, a);
                     while (result.regExpInBrackets.test(exp)) {
-                        exp = exp.replace(result.regExpInBrackets, _calcSimpleExp(result.regExpInBrackets.exec(exp)[0]));
+                        exp = exp.replace(result.regExpInBrackets, this._calcSimpleExp(result.regExpInBrackets.exec(exp)[0]));
                     }
                     exp = this._calcSimpleExp(exp);
                     res += exp;
