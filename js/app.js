@@ -1,10 +1,26 @@
 "use strict";
 
 (function (angular, undefined) {
+    /**
+     * Main App module
+     *
+     * @type module
+     */
     var calculatorApp = angular.module('calculatorApp', []);
 
+    /**
+     * Buttons list for calculator
+     *
+     * @type value
+     */
     calculatorApp.value('buttons', ['7', '8', '9', '←', 'C', '4', '5', '6', '×', '÷', '1', '2', '3', '+', '-', '0', '.', '(', ')', '=']);
 
+    /**
+     * Update result string
+     * 
+     * @type service
+     * @return String
+     */
     calculatorApp.service('result', function () {
         return {
             regOpenBracket: /\(/g,
@@ -12,9 +28,22 @@
             regExpInBrackets: /(\([^()]+\))/,
             regIsCalculated: /\s=\s\-?[0-9]+\.?[0-9]*$/,
             regOperatorIsLast: /(\.|\s[+-×÷]\s|\-)$/,
+            /**
+             * Backspace button handler
+             *
+             * @param exp String - result string
+             * @returns String
+             */
             backSpace: function (exp) {
                 return this.regIsCalculated.test(exp) ? '' : exp.replace(/\s*.\s*$/, '');
             },
+            /**
+             * All buttons exept '←' and '=' handler
+             *
+             * @param exp String - result string
+             * @param a String - pressed button
+             * @returns String
+             */
             update: function (exp, a) {
                 var result = '';
 
@@ -22,6 +51,8 @@
                 if ((this.regIsCalculated.test(exp) || exp == '0') && /[0-9]|\.|\(/.test(a)) {
                     exp = '';
                 }
+
+                // Handle pressed button
                 switch (a) {
                     case '+':
                     case '-':
@@ -76,8 +107,21 @@
         };
     });
 
+    /**
+     * Calculate string expression
+     * 
+     * @type service
+     * @param result - service.result
+     * @return Object
+     */
     calculatorApp.service('calculate', ['result', function (result) {
         return {
+            /**
+             * Check expression
+             *
+             * @param exp String
+             * @returns Boolean (true if all is OK)
+             */
             _checkExp: function (exp) {
                 if (exp == '' || result.regIsCalculated.test(exp)) {
                     return false;
@@ -97,9 +141,20 @@
                 }
                 return true;
             },
+
+            /**
+             * Calculate cimple expression whithout brackets
+             *
+             * @param exp String - expression for calculating
+             * @returns String
+             */
             _calcSimpleExp: function (exp) {
                 var k, x, y;
+
+                //Parse string to expression array
                 exp = exp.replace('(', '').replace(')', '').split(' ');
+
+                //Calculate expression array
                 while (exp.length > 1) {
                     if (exp.indexOf('∗') != -1 || exp.indexOf('÷') != -1) {
                         for (var i = 0; i < exp.length; i++) {
@@ -112,43 +167,64 @@
                         oneOperation(1);
                     }
                 }
+
+                /**
+                 * Calculate one operation
+                 *
+                 * @param i Number - index in expression array
+                 */
                 function oneOperation(i) {
-                    x = exp[i - 1].split('.');
-                    y = exp[i + 1].split('.');
-                    if (x[1] && y[1]) {
-                        x[1] = '' + x[1];
-                        y[1] = '' + y[1];
-                        k = Math.pow(10, x[1].length > y[1].length ? x[1].length : y[1].length);
-                    }
-                    else if (x[1]) {
-                        x[1] = '' + x[1];
-                        k = Math.pow(10, x[1].length);
-                    }
-                    else if (y[1]) {
-                        y[1] = '' + y[1];
-                        k = Math.pow(10, y[1].length);
+                    // Checking if division by zero was
+                    if(exp[i - 1] == 'Infinity' || exp[i + 1] == 'Infinity'){
+                        exp[i - 1] = 'Infinity';
                     }
                     else {
-                        k = 1;
-                    }
-                    switch (exp[i]) {
-                        case '×':
-                            exp[i - 1] = '' + ((parseFloat(exp[i - 1]) * k) * (parseFloat(exp[i + 1]) * k)) / (k * k);
-                            break;
-                        case '÷':
-                            exp[i - 1] = '' + ((parseFloat(exp[i - 1]) * k) / (parseFloat(exp[i + 1]) * k));
-                            break;
-                        case '+':
-                            exp[i - 1] = '' + ((parseFloat(exp[i - 1]) * k) + (parseFloat(exp[i + 1]) * k)) / k;
-                            break;
-                        case '-':
-                            exp[i - 1] = '' + ((parseFloat(exp[i - 1]) * k) - (parseFloat(exp[i + 1]) * k)) / k;
-                            break;
+                        //Calculating with floating error considering
+                        x = exp[i - 1].split('.');
+                        y = exp[i + 1].split('.');
+                        if (x[1] && y[1]) {
+                            x[1] = '' + x[1];
+                            y[1] = '' + y[1];
+                            k = Math.pow(10, x[1].length > y[1].length ? x[1].length : y[1].length);
+                        }
+                        else if (x[1]) {
+                            x[1] = '' + x[1];
+                            k = Math.pow(10, x[1].length);
+                        }
+                        else if (y[1]) {
+                            y[1] = '' + y[1];
+                            k = Math.pow(10, y[1].length);
+                        }
+                        else {
+                            k = 1;
+                        }
+                        switch (exp[i]) {
+                            case '×':
+                                exp[i - 1] = '' + ((parseFloat(exp[i - 1]) * k) * (parseFloat(exp[i + 1]) * k)) / (k * k);
+                                break;
+                            case '÷':
+                                exp[i - 1] = exp[i + 1] == '0' ? ('' + ((parseFloat(exp[i - 1]) * k) / (parseFloat(exp[i + 1]) * k))) : 'Infinity';
+                                break;
+                            case '+':
+                                exp[i - 1] = '' + ((parseFloat(exp[i - 1]) * k) + (parseFloat(exp[i + 1]) * k)) / k;
+                                break;
+                            case '-':
+                                exp[i - 1] = '' + ((parseFloat(exp[i - 1]) * k) - (parseFloat(exp[i + 1]) * k)) / k;
+                                break;
+                        }
                     }
                     exp.splice(i, 2);
                 }
                 return exp[0].toString();
             },
+
+            /**
+             * Main calculation function
+             *
+             * @param exp String - full expression string for calculating
+             * @param a String - pressed button
+             * @returns Object
+             */
             cEval: function (exp, a) {
                 var res = '',
                     success = false;
@@ -172,6 +248,14 @@
         };
     }]);
 
+    /**
+     * Main app controller
+     * 
+     * @param $scope
+     * @param buttons - value.buttons
+     * @param result - service.result
+     * @param calculate - service.calculate
+     */
     calculatorApp.controller('CalculatorCtrl', ['$scope', 'buttons', 'result', 'calculate', function ($scope, buttons, result, calculate) {
         $scope.buttons = buttons;
         $scope.res = '';
