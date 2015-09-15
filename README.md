@@ -3,5 +3,5 @@
 The online calculator with Angular.js on http://calculator.nikko.pp.ua
 
 Local:
-- run: npm install
+- run: npm start
 - run tests: npm test
