@@ -422,7 +422,7 @@ describe('CalculatorApp services', function() {
             });
         })(exp);
 
-        exp = ['1 + 2','1 - 2','1 + (1.5 + 2)','(1.5 + 2) - 5'];
+        exp = ['1 + 2','1 - 2','1 + (1.5 + 2)','(1.5 + 2) - 5','1 + (-3)'];
         (function(exp){
             exp.forEach(function(e){
                 button = '=';
@@ -434,8 +434,65 @@ describe('CalculatorApp services', function() {
     });
 
     describe('Service "calculate"', function(){
+        var calculate,
+            exp_good = ['1 + 2','1 - 2','1 + (1.5 + 2)','(1.5 + 2) - 5','1 + (-3)','1 + (1 + 1) - (1 + 1)'],
+            exp_bad = ['','1','1 + ','1 + (1.5 + 2','(1.5 + 2) -','1 + (-3','1 + (1 + 1) - (1 + 1'],
+            simple_exp = [{
+                exp: '1 + 1',
+                res: '2'
+            },
+            {
+                exp: '-10 + 20',
+                res: '10'
+            },
+            {
+                exp: '10 + -20',
+                res: '-10'
+            },
+            {
+                exp: '-10 + 5',
+                res: '-5'
+            },
+            {
+                exp: '1 - 1',
+                res: '0'
+            },
+            {
+                exp: '2 × 3',
+                res: '6'
+            },
+            {
+                exp: '6 ÷ 3',
+                res: '2'
+            }];
 
-        //TODO create tests for calculate service
+        beforeEach(function(){
+            inject(function($injector) {
+                calculate = $injector.get('calculate');
+            });
+        });
+
+        //_checkExp method
+        exp_bad.forEach(function(e){
+            it('shoud return "false" for _checkExp method', function(){
+                expect(calculate._checkExp(e)).toBeFalsy();
+            });
+        });
+
+        exp_good.forEach(function(e){
+            it('shoud return "true" for _checkExp method', function(){
+                expect(calculate._checkExp(e)).toBeTruthy();
+            });
+        });
+
+        //_calcSimpleExp method
+        simple_exp.forEach(function(e){
+            it('shoud return "' + e.res + '" for _calcSimpleExp method', function(){
+                expect(calculate._calcSimpleExp(e.exp)).toBe(e.res);
+            });
+        });
+
+        //TODO update tests for calculate service
 
     });
 });

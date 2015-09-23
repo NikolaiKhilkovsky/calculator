@@ -10,9 +10,25 @@ var calculatorApp = angular.module('calculatorApp', []);
 /**
  * Buttons list for calculator
  *
- * @type Object
+ * @type Array
  */
 calculatorApp.constant('buttons', ['7', '8', '9', '←', 'C', '4', '5', '6', '×', '÷', '1', '2', '3', '+', '-', '0', '.', '(', ')', '=']);
+
+/**
+ * Regulars list for calculator
+ *
+ * @type Object
+ */
+calculatorApp.constant('reg', {
+    regOpenBracket: /\(/g,
+    regCloseBracket: /\)/g,
+    regOpenBracketIsLast: /\($/,
+    regExpInBrackets: /(\([^()]+\))/,
+    regIsCalculated: /\s=\s\-?[0-9]+\.?[0-9]*$/,
+    regOperatorIsLast: /(\s[+-×÷]\s)$/,
+    regMinusIsLast: /\-$/,
+    regDotIsLast: /(\.)$/
+});
 
 /**
  * Update result string
@@ -20,16 +36,8 @@ calculatorApp.constant('buttons', ['7', '8', '9', '←', 'C', '4', '5', '6', '×
  * @type Service
  * @return String
  */
-calculatorApp.service('result', function () {
+calculatorApp.service('result', ['reg', function (reg) {
     return {
-        regOpenBracket: /\(/g,
-        regCloseBracket: /\)/g,
-        regOpenBracketIsLast: /\($/,
-        regExpInBrackets: /(\([^()]+\))/,
-        regIsCalculated: /\s=\s\-?[0-9]+\.?[0-9]*$/,
-        regOperatorIsLast: /(\s[+-×÷]\s)$/,
-        regMinusIsLast: /\-$/,
-        regDotIsLast: /(\.)$/,
         /**
          * Backspace button handler
          *
@@ -37,7 +45,7 @@ calculatorApp.service('result', function () {
          * @returns String
          */
         backSpace: function (exp) {
-            return this.regIsCalculated.test(exp) ? '' : exp.replace(/[()-]$|(\s[+-×÷]\s)$|[0-9.]$/, '');
+            return reg.regIsCalculated.test(exp) ? '' : exp.replace(/[()-]$|(\s[+-×÷]\s)$|[0-9.]$/, '');
         },
         /**
          * All buttons exept '←' and '=' handler
@@ -50,7 +58,7 @@ calculatorApp.service('result', function () {
             var result = '';
 
             // Clean result string if '=' is present or result string is '0' and Digit or Bracket button pressed
-            if ((this.regIsCalculated.test(exp) || exp == '0') && /[0-9]|\.|\(/.test(a)) {
+            if ((reg.regIsCalculated.test(exp) || exp == '0') && /[0-9]|\.|\(/.test(a)) {
                 exp = '';
             }
 
@@ -61,41 +69,41 @@ calculatorApp.service('result', function () {
                 case '×':
                 case '÷':
                 case '=':
-                    if (this.regIsCalculated.test(exp)) {
+                    if (reg.regIsCalculated.test(exp)) {
                         exp = exp.replace(/^.+=\s/, '');
                     }
-                    exp = exp.replace(this.regMinusIsLast, '');
+                    exp = exp.replace(reg.regMinusIsLast, '');
                     if(a != '-'){
-                        exp = exp.replace(this.regDotIsLast, '');
-                        exp = exp == '' ? '0' : exp.replace(this.regOperatorIsLast, '');
+                        exp = exp.replace(reg.regDotIsLast, '');
+                        exp = exp == '' ? '0' : exp.replace(reg.regOperatorIsLast, '');
                     }
                     if (a == '-') {
                         if(exp == '0' || exp == '' || /\($/.test(exp)){
                             exp = exp == '0' ? '' : exp;
                             result = a;
                         }
-                        else if(this.regOperatorIsLast.test(exp)){
+                        else if(reg.regOperatorIsLast.test(exp)){
                             result = a;
                         }
                         else {
-                            exp = exp.replace(this.regDotIsLast, '');
+                            exp = exp.replace(reg.regDotIsLast, '');
                             result = ' ' + a + ' ';
                         }
                     }
                     else {
-                        result = this.regOpenBracketIsLast.test(exp) ? '' : ' ' + a + ' ';
+                        result = reg.regOpenBracketIsLast.test(exp) ? '' : ' ' + a + ' ';
                     }
                     break;
                 case '(':
-                    if (this.regOperatorIsLast.test(exp) || this.regMinusIsLast.test(exp) || this.regOpenBracketIsLast.test(exp) || exp == '') {
+                    if (reg.regOperatorIsLast.test(exp) || reg.regMinusIsLast.test(exp) || reg.regOpenBracketIsLast.test(exp) || exp == '') {
                         result = a;
                     }
                     break;
                 case ')':
-                    var open_bracket = this.regOpenBracket.test(exp) ? exp.match(this.regOpenBracket).length : 0;
-                    var close_bracket = this.regCloseBracket.test(exp) ? exp.match(this.regCloseBracket).length : 0;
+                    var open_bracket = reg.regOpenBracket.test(exp) ? exp.match(reg.regOpenBracket).length : 0;
+                    var close_bracket = reg.regCloseBracket.test(exp) ? exp.match(reg.regCloseBracket).length : 0;
                     if (open_bracket > close_bracket && /([0-9]+|\)|\.)$/g.test(exp)) {
-                        exp = exp.replace(this.regDotIsLast, '');
+                        exp = exp.replace(reg.regDotIsLast, '');
                         result = a;
                     }
                     break;
@@ -105,7 +113,7 @@ calculatorApp.service('result', function () {
                     }
                     break;
                 case '.':
-                    if (exp == '' || /\s$/.test(exp) || /\($/.test(exp) || this.regMinusIsLast.test(exp)) {
+                    if (exp == '' || /\s$/.test(exp) || /\($/.test(exp) || reg.regMinusIsLast.test(exp)) {
                         result = '0' + a;
                     }
                     else if (!/\.[0-9]*$/.test(exp) && !/\)$/.test(exp)) {
@@ -120,7 +128,7 @@ calculatorApp.service('result', function () {
             return exp + result;
         }
     };
-});
+}]);
 
 /**
  * Calculate string expression
@@ -129,7 +137,7 @@ calculatorApp.service('result', function () {
  * @param result - service.result
  * @return Object
  */
-calculatorApp.service('calculate', ['result', function (result) {
+calculatorApp.service('calculate', ['reg', 'result', function (reg, result) {
     return {
         /**
          * Check expression
@@ -138,21 +146,25 @@ calculatorApp.service('calculate', ['result', function (result) {
          * @returns Boolean (true if all is OK)
          */
         _checkExp: function (exp) {
-            if (exp == '' || result.regIsCalculated.test(exp)) {
+            var test_open_bracket = reg.regOpenBracket.test(exp),
+                test_close_bracket = reg.regCloseBracket.test(exp);
+            reg.regOpenBracket.lastIndex = 0;
+            reg.regCloseBracket.lastIndex = 0;
+
+            if (exp == '' || reg.regIsCalculated.test(exp) || reg.regOperatorIsLast.test(exp) || reg.regMinusIsLast.test(exp) || reg.regDotIsLast.test(exp)) {
                 return false;
             }
-            else if (!/[0-9]\s[^()]\s[0-9]*.?[0-9]+/g.test(exp)) {
+            if (test_open_bracket && !test_close_bracket) {
                 return false;
             }
-            else {
-                var test_open_bracket = result.regOpenBracket.test(exp),
-                    test_close_bracket = result.regCloseBracket.test(exp);
-                if (test_open_bracket && !test_close_bracket) {
-                    return false;
-                }
-                else if (test_open_bracket && test_close_bracket && exp.match(result.regOpenBracket).length != exp.match(result.regCloseBracket).length) {
-                    return false;
-                }
+            if (test_open_bracket && test_close_bracket && exp.match(reg.regOpenBracket).length != exp.match(reg.regCloseBracket).length) {
+                return false;
+            }
+            if (!test_open_bracket && !/[0-9]\s[+-×÷]\s[0-9]*.?[0-9]+/g.test(exp)) {
+                return false;
+            }
+            if(test_open_bracket && !/\s[+-×÷]\s/g.test(exp)){
+                return false;
             }
             return true;
         },
@@ -218,7 +230,7 @@ calculatorApp.service('calculate', ['result', function (result) {
                             exp[i - 1] = '' + ((parseFloat(exp[i - 1]) * k) * (parseFloat(exp[i + 1]) * k)) / (k * k);
                             break;
                         case '÷':
-                            exp[i - 1] = exp[i + 1] == '0' ? ('' + ((parseFloat(exp[i - 1]) * k) / (parseFloat(exp[i + 1]) * k))) : 'Infinity';
+                            exp[i - 1] = exp[i + 1] == '0' ? 'Infinity' : ('' + ((parseFloat(exp[i - 1]) * k) / (parseFloat(exp[i + 1]) * k)));
                             break;
                         case '+':
                             exp[i - 1] = '' + ((parseFloat(exp[i - 1]) * k) + (parseFloat(exp[i + 1]) * k)) / k;
@@ -245,8 +257,8 @@ calculatorApp.service('calculate', ['result', function (result) {
                 success = false;
             if (this._checkExp(exp)) {
                 res = result.update(exp, a);
-                while (result.regExpInBrackets.test(exp)) {
-                    exp = exp.replace(result.regExpInBrackets, this._calcSimpleExp(result.regExpInBrackets.exec(exp)[0]));
+                while (reg.regExpInBrackets.test(exp)) {
+                    exp = exp.replace(reg.regExpInBrackets, this._calcSimpleExp(reg.regExpInBrackets.exec(exp)[0]));
                 }
                 exp = this._calcSimpleExp(exp);
                 res += exp;

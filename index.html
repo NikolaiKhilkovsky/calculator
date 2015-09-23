@@ -24,7 +24,7 @@
                     </div>
                     <div class="calc-history">
                         <h3>Calculator history</h3>
-                        <div class="item" data-ng-repeat="item in historyItems">{{item}}</div>
+                        <div class="item" data-ng-repeat="item in historyItems track by $index">{{item}}</div>
                     </div>
                 </div>
             </div>
