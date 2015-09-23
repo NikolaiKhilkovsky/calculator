@@ -2,7 +2,7 @@
 
 /* jasmine specs for controllers go here */
 describe('CalculatorApp controllers', function () {
-    describe('CalculatorCtrl', function(){
+    describe('Controller "CalculatorCtrl"', function(){
         var scope, ctrl;
 
         beforeEach(module('calculatorApp'));

@@ -24,6 +24,7 @@ calculatorApp.service('result', function () {
     return {
         regOpenBracket: /\(/g,
         regCloseBracket: /\)/g,
+        regOpenBracketIsLast: /\($/,
         regExpInBrackets: /(\([^()]+\))/,
         regIsCalculated: /\s=\s\-?[0-9]+\.?[0-9]*$/,
         regOperatorIsLast: /(\s[+-×÷]\s)$/,
@@ -82,18 +83,19 @@ calculatorApp.service('result', function () {
                         }
                     }
                     else {
-                        result = ' ' + a + ' ';
+                        result = this.regOpenBracketIsLast.test(exp) ? '' : ' ' + a + ' ';
                     }
                     break;
                 case '(':
-                    if (!/([0-9]|\.)$/.test(exp)) {
+                    if (this.regOperatorIsLast.test(exp) || this.regMinusIsLast.test(exp) || this.regOpenBracketIsLast.test(exp) || exp == '') {
                         result = a;
                     }
                     break;
                 case ')':
                     var open_bracket = this.regOpenBracket.test(exp) ? exp.match(this.regOpenBracket).length : 0;
                     var close_bracket = this.regCloseBracket.test(exp) ? exp.match(this.regCloseBracket).length : 0;
-                    if (open_bracket > close_bracket && /[0-9]+/g.test(exp)) {
+                    if (open_bracket > close_bracket && /([0-9]+|\)|\.)$/g.test(exp)) {
+                        exp = exp.replace(this.regDotIsLast, '');
                         result = a;
                     }
                     break;

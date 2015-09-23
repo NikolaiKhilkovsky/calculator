@@ -7,7 +7,7 @@ describe('CalculatorApp services', function() {
     beforeEach(module('calculatorApp'));
 
     //result service
-    describe('result', function(){
+    describe('Service "result"', function(){
         var result;
 
         beforeEach(function(){
@@ -59,6 +59,7 @@ describe('CalculatorApp services', function() {
                         });
                     });
                 })(e, button);
+
                 button = ['+','×','÷'];
                 (function(e, button){
                     button.forEach(function(a){
@@ -67,12 +68,14 @@ describe('CalculatorApp services', function() {
                         });
                     });
                 })(e, button);
+
                 button = ')';
                 (function(e, button){
                     it('shoud return "' + e + '" for update method', function(){
                         expect(result.update(e, button)).toBe(e);
                     });
                 })(e, button);
+
                 button = '.';
                 (function(e, button){
                     it('shoud return "0." for update method', function(){
@@ -82,7 +85,7 @@ describe('CalculatorApp services', function() {
             });
         })(exp);
 
-        exp = ['1','1 + 1'];
+        exp = ['1','1 + 1','1 + (1','1 + (-1'];
         (function(exp){
             exp.forEach(function(e){
                 button = ['0','1','2','3','4','5','6','7','8','9','.'];
@@ -93,6 +96,7 @@ describe('CalculatorApp services', function() {
                         });
                     });
                 })(e, button);
+
                 button = ['+','-','×','÷'];
                 (function(e, button){
                     button.forEach(function(a){
@@ -101,18 +105,26 @@ describe('CalculatorApp services', function() {
                         });
                     });
                 })(e, button);
+
                 button = ['(',')'];
                 (function(e, button){
                     button.forEach(function(a){
-                        it('shoud return "' + e + '" for update method', function(){
-                            expect(result.update(e, a)).toBe(e);
-                        });
+                        if((e == '1 + (1' || e == '1 + (-1') && a == ')'){
+                            it('shoud return "' + e + a + '" for update method', function(){
+                                expect(result.update(e, a)).toBe(e + a);
+                            });
+                        }
+                        else {
+                            it('shoud return "' + e + '" for update method', function(){
+                                expect(result.update(e, a)).toBe(e);
+                            });
+                        }
                     });
                 })(e, button);
             });
         })(exp);
 
-        exp = ['1.','1.1 + 1.'];
+        exp = ['1.','1.1 + 1.','1 + (1.','1 + (1.1'];
         (function(exp){
             exp.forEach(function(e){
                 button = ['0','1','2','3','4','5','6','7','8','9'];
@@ -123,6 +135,7 @@ describe('CalculatorApp services', function() {
                         });
                     });
                 })(e, button);
+
                 button = ['+','-','×','÷'];
                 (function(e, button){
                     button.forEach(function(a){
@@ -131,13 +144,28 @@ describe('CalculatorApp services', function() {
                         });
                     });
                 })(e, button);
-                button = ['(',')','.'];
+
+                button = ['(','.'];
                 (function(e, button){
                     button.forEach(function(a){
-                        it('shoud return "1" for update method', function(){
+                        it('shoud return "' + e + '" for update method', function(){
                             expect(result.update(e, a)).toBe(e);
                         });
                     });
+                })(e, button);
+
+                button = ')';
+                (function(e, button){
+                    if(e == '1 + (1.' || e == '1 + (1.1'){
+                        it('shoud return "' + e.replace(/\.$/, '') + button + '" for update method', function(){
+                            expect(result.update(e, button)).toBe(e.replace(/\.$/, '') + button);
+                        });
+                    }
+                    else {
+                        it('shoud return "' + e + '" for update method', function(){
+                            expect(result.update(e, button)).toBe(e);
+                        });
+                    }
                 })(e, button);
             });
         })(exp);
@@ -153,6 +181,7 @@ describe('CalculatorApp services', function() {
                         });
                     });
                 })(e, button);
+
                 button = ['+','-','×','÷'];
                 (function(e, button){
                     button.forEach(function(a){
@@ -161,6 +190,7 @@ describe('CalculatorApp services', function() {
                         });
                     });
                 })(e, button);
+
                 button = ['(',')','.'];
                 (function(e, button){
                     button.forEach(function(a){
@@ -172,7 +202,7 @@ describe('CalculatorApp services', function() {
             });
         })(exp);
 
-        exp = ['1.1 + ','1.1 - ','1.1 × ','1.1 ÷ '];
+        exp = ['1.1 + ','1.1 - ','1.1 × ','1.1 ÷ ','1.1 + (1.1 + ','1.1 + (1.1 - ','1.1 + (1.1 × ','1.1 + (1.1 ÷ '];
         (function(exp){
             exp.forEach(function(e){
                 button = ['0','1','2','3','4','5','6','7','8','9','(','-'];
@@ -183,20 +213,23 @@ describe('CalculatorApp services', function() {
                         });
                     });
                 })(e, button);
+
                 button = ['+','×','÷'];
                 (function(e, button){
                     button.forEach(function(a){
-                        it('shoud return "1.1 ' + a + ' " for update method', function(){
-                            expect(result.update(e, a)).toBe('1.1 ' + a + ' ');
+                        it('shoud return "' + e.replace(/\s[+×÷-]\s$/, '') + ' ' + a + ' " for update method', function(){
+                            expect(result.update(e, a)).toBe(e.replace(/\s[+×÷-]\s$/, '') + ' ' + a + ' ');
                         });
                     });
                 })(e, button);
+
                 button = ')';
                 (function(e, button){
                     it('shoud return "' + e + '" for update method', function(){
                         expect(result.update(e, button)).toBe(e);
                     });
                 })(e, button);
+
                 button = '.';
                 (function(e, button){
                     it('shoud return "' + e + '0." for update method', function(){
@@ -206,7 +239,7 @@ describe('CalculatorApp services', function() {
             });
         })(exp);
 
-        exp = ['1.1 + -','1.1 - -','1.1 × -','1.1 ÷ -'];
+        exp = ['1.1 + -','1.1 - -','1.1 × -','1.1 ÷ -','1.1 + (1.1 + -','1.1 + (1.1 - -','1.1 + (1.1 × -','1.1 + (1 ÷ -'];
         (function(exp){
             exp.forEach(function(e){
                 button = ['0','1','2','3','4','5','6','7','8','9','('];
@@ -217,26 +250,30 @@ describe('CalculatorApp services', function() {
                         });
                     });
                 })(e, button);
+
                 button = ['+','×','÷'];
                 (function(e, button){
                     button.forEach(function(a){
-                        it('shoud return "1.1 ' + a + ' " for update method', function(){
-                            expect(result.update(e, a)).toBe('1.1 ' + a + ' ');
+                        it('shoud return "' + e.replace(/\s[+×÷-]\s\-$/, '') + ' ' + a + ' " for update method', function(){
+                            expect(result.update(e, a)).toBe(e.replace(/\s[+×÷-]\s\-$/, '') + ' ' + a + ' ');
                         });
                     });
                 })(e, button);
+
                 button = '-';
                 (function(e, button){
                     it('shoud return "' + e.replace(/\-$/, '') + button + '" for update method', function(){
                         expect(result.update(e, button)).toBe(e.replace(/\-$/, '') + button);
                     });
                 })(e, button);
+
                 button = ')';
                 (function(e, button){
                     it('shoud return "' + e + '" for update method', function(){
                         expect(result.update(e, button)).toBe(e);
                     });
                 })(e, button);
+
                 button = '.';
                 (function(e, button){
                     it('shoud return "' + e + '0." for update method', function(){
@@ -246,11 +283,157 @@ describe('CalculatorApp services', function() {
             });
         })(exp);
 
-        // TODO create tests for expressions with brackets
+        exp = ['(','1 + (','((','1 + (('];
+        (function(exp){
+            exp.forEach(function(e){
+                button = ['0','1','2','3','4','5','6','7','8','9','(','-'];
+                (function(e, button){
+                    button.forEach(function(a){
+                        it('shoud return "' + e + a + '" for update method', function(){
+                            expect(result.update(e, a)).toBe(e + a);
+                        });
+                    });
+                })(e, button);
 
+                button = '.';
+                (function(e, button){
+                    it('shoud return "' + e + '0." for update method', function(){
+                        expect(result.update(e, button)).toBe(e + '0.');
+                    });
+                })(e, button);
+
+                button = ['+','×','÷',')'];
+                (function(e, button){
+                    button.forEach(function(a){
+                        it('shoud return "' + e + '" for update method', function(){
+                            expect(result.update(e, a)).toBe(e);
+                        });
+                    });
+                })(e, button);
+            });
+        })(exp);
+
+        exp = ['((1)','1 + ((1)'];
+        (function(exp){
+            exp.forEach(function(e){
+                button = ['+','×','÷','-'];
+                (function(e, button){
+                    button.forEach(function(a){
+                        it('shoud return "' + e + ' ' + a + ' " for update method', function(){
+                            expect(result.update(e, a)).toBe(e + ' ' + a + ' ');
+                        });
+                    });
+                })(e, button);
+
+                button = ')';
+                (function(e, button){
+                    it('shoud return "' + e + button + '" for update method', function(){
+                        expect(result.update(e, button)).toBe(e + button);
+                    });
+                })(e, button);
+
+                button = ['0','1','2','3','4','5','6','7','8','9','(','.'];
+                (function(e, button){
+                    button.forEach(function(a){
+                        it('shoud return "' + e +'" for update method', function(){
+                            expect(result.update(e, a)).toBe(e);
+                        });
+                    });
+                })(e, button);
+            });
+        })(exp);
+
+        exp = ['(1)','(1 + 1)'];
+        (function(exp){
+            exp.forEach(function(e){
+                button = ['+','×','÷','-'];
+                (function(e, button){
+                    button.forEach(function(a){
+                        it('shoud return "' + e + ' ' + a + ' " for update method', function(){
+                            expect(result.update(e, a)).toBe(e + ' ' + a + ' ');
+                        });
+                    });
+                })(e, button);
+
+                button = ['0','1','2','3','4','5','6','7','8','9','(','.',')'];
+                (function(e, button){
+                    button.forEach(function(a){
+                        it('shoud return "' + e +'" for update method', function(){
+                            expect(result.update(e, a)).toBe(e);
+                        });
+                    });
+                })(e, button);
+            });
+        })(exp);
+
+        exp = ['1 + 2 = 3','1 - 2 = -1','1 + (1.5 + 2) = 4.5','(1.5 + 2) - 5 = -2.5'];
+        (function(exp){
+            exp.forEach(function(e, i){
+                button = ['0','1','2','3','4','5','6','7','8','9','('];
+                (function(e, button){
+                    button.forEach(function(a){
+                        it('shoud return "' + a + '" for update method', function(){
+                            expect(result.update(e, a)).toBe(a);
+                        });
+                    });
+                })(e, button);
+
+                button = '.';
+                (function(e, button){
+                    it('shoud return "0' + button + '" for update method', function(){
+                        expect(result.update(e, button)).toBe('0' + button);
+                    });
+                })(e, button);
+
+                button = ['+','×','÷','-'];
+                (function(e, button){
+                    button.forEach(function(a){
+                        switch(i){
+                            case 0:
+                                it('shoud return "3' + ' ' + a + ' " for update method', function(){
+                                    expect(result.update(e, a)).toBe('3' + ' ' + a + ' ');
+                                });
+                                break;
+                            case 1:
+                                it('shoud return "-1' + ' ' + a + ' " for update method', function(){
+                                    expect(result.update(e, a)).toBe('-1' + ' ' + a + ' ');
+                                });
+                                break;
+                            case 2:
+                                it('shoud return "4.5' + ' ' + a + ' " for update method', function(){
+                                    expect(result.update(e, a)).toBe('4.5' + ' ' + a + ' ');
+                                });
+                                break;
+                            case 3:
+                                it('shoud return "-2.5' + ' ' + a + ' " for update method', function(){
+                                    expect(result.update(e, a)).toBe('-2.5' + ' ' + a + ' ');
+                                });
+                                break;
+                        }
+                    });
+                })(e, button);
+
+                button = ')';
+                (function(e, button){
+                    it('shoud return "' + e + '" for update method', function(){
+                        expect(result.update(e, button)).toBe(e);
+                    });
+                })(e, button);
+            });
+        })(exp);
+
+        exp = ['1 + 2','1 - 2','1 + (1.5 + 2)','(1.5 + 2) - 5'];
+        (function(exp){
+            exp.forEach(function(e){
+                button = '=';
+                it('shoud return "' + e + ' ' + button + ' " for update method', function(){
+                    expect(result.update(e, button)).toBe(e + ' ' + button + ' ');
+                });
+            });
+        })(exp);
     });
 
-    describe('calculate', function(){
+    describe('Service "calculate"', function(){
 
         //TODO create tests for calculate service
 
