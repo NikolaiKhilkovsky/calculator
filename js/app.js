@@ -183,9 +183,9 @@ calculatorApp.service('calculate', ['reg', 'result', function (reg, result) {
 
             //Calculate expression array
             while (exp.length > 1) {
-                if (exp.indexOf('∗') != -1 || exp.indexOf('÷') != -1) {
+                if (exp.indexOf('×') != -1 || exp.indexOf('÷') != -1) {
                     for (var i = 0; i < exp.length; i++) {
-                        if (exp[i] == '∗' || exp[i] == '÷') {
+                        if (exp[i] == '×' || exp[i] == '÷') {
                             oneOperation(i);
                         }
                     }

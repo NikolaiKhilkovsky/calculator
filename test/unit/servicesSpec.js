@@ -464,6 +464,50 @@ describe('CalculatorApp services', function() {
             {
                 exp: '6 ÷ 3',
                 res: '2'
+            },
+            {
+                exp: '2.36 - 2',
+                res: '0.36'
+            },
+            {
+                exp: '5 ÷ 2',
+                res: '2.5'
+            },
+            {
+                exp: '5 ÷ 0',
+                res: 'Infinity'
+            },
+            {
+                exp: '2 - 5 ÷ 0',
+                res: 'Infinity'
+            },
+            {
+                exp: '6 ÷ 3 + 2',
+                res: '4'
+            },
+            {
+                exp: '2 + 6 × 3',
+                res: '20'
+            },
+            {
+                exp: '2 + 6 × 3 - 6 ÷ 3',
+                res: '18'
+            }],
+            full_exp = [{
+                exp: '1 + 2 × (3 + 5)',
+                res: '17'
+            },
+            {
+                exp: '(1 + 2) × (3 + 5)',
+                res: '24'
+            },
+            {
+                exp: '1 + 2 × (3 + -5)',
+                res: '-3'
+            },
+            {
+                exp: '5 ÷ ((-2) + 2)',
+                res: 'Infinity'
             }];
 
         beforeEach(function(){
@@ -492,7 +536,32 @@ describe('CalculatorApp services', function() {
             });
         });
 
-        //TODO update tests for calculate service
+        //cEval method
+        exp_bad.forEach(function(e){
+            it('shoud return "false" for cEval method', function(){
+                expect(calculate.cEval(e, '=')).toEqual({
+                    result: e,
+                    success: false
+                });
+            });
+        });
 
+        simple_exp.forEach(function(e){
+            it('shoud return calculated expression for cEval method', function(){
+                expect(calculate.cEval(e.exp, '=')).toEqual({
+                    result: e.exp + ' = ' + e.res,
+                    success: true
+                });
+            });
+        });
+
+        full_exp.forEach(function(e){
+            it('shoud return calculated expression for cEval method', function(){
+                expect(calculate.cEval(e.exp, '=')).toEqual({
+                    result: e.exp + ' = ' + e.res,
+                    success: true
+                });
+            });
+        });
     });
 });
