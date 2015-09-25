@@ -33,6 +33,7 @@ calculatorApp.constant('reg', {
 /**
  * Update result string
  * 
+ * @param reg Object - constant.reg
  * @type Service
  * @return String
  */
@@ -73,16 +74,16 @@ calculatorApp.service('result', ['reg', function (reg) {
                         exp = exp.replace(/^.+=\s/, '');
                     }
                     exp = exp.replace(reg.regMinusIsLast, '');
-                    if(a != '-'){
+                    if (a != '-') {
                         exp = exp.replace(reg.regDotIsLast, '');
                         exp = exp == '' ? '0' : exp.replace(reg.regOperatorIsLast, '');
                     }
                     if (a == '-') {
-                        if(exp == '0' || exp == '' || /\($/.test(exp)){
+                        if (exp == '0' || exp == '' || /\($/.test(exp)) {
                             exp = exp == '0' ? '' : exp;
                             result = a;
                         }
-                        else if(reg.regOperatorIsLast.test(exp)){
+                        else if (reg.regOperatorIsLast.test(exp)) {
                             result = a;
                         }
                         else {
@@ -134,7 +135,8 @@ calculatorApp.service('result', ['reg', function (reg) {
  * Calculate string expression
  * 
  * @type service
- * @param result - service.result
+ * @param reg Object - constant.reg
+ * @param result Function - service.result
  * @return Object
  */
 calculatorApp.service('calculate', ['reg', 'result', function (reg, result) {
@@ -163,12 +165,11 @@ calculatorApp.service('calculate', ['reg', 'result', function (reg, result) {
             if (!test_open_bracket && !/[0-9]\s[+-×÷]\s[0-9]*.?[0-9]+/g.test(exp)) {
                 return false;
             }
-            if(test_open_bracket && !/\s[+-×÷]\s/g.test(exp)){
+            if (test_open_bracket && !/\s[+-×÷]\s/g.test(exp)) {
                 return false;
             }
             return true;
         },
-
         /**
          * Calculate cimple expression whithout brackets
          *
@@ -202,7 +203,7 @@ calculatorApp.service('calculate', ['reg', 'result', function (reg, result) {
              */
             function oneOperation(i) {
                 // Checking if division by zero was
-                if(exp[i - 1] == 'Infinity' || exp[i + 1] == 'Infinity'){
+                if (exp[i - 1] == 'Infinity' || exp[i + 1] == 'Infinity') {
                     exp[i - 1] = 'Infinity';
                 }
                 else {
@@ -244,7 +245,6 @@ calculatorApp.service('calculate', ['reg', 'result', function (reg, result) {
             }
             return exp[0].toString();
         },
-
         /**
          * Main calculation function
          *

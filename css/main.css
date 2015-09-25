@@ -1,6 +1,7 @@
 /*
     Author: Nikolai Khilkovsky (khilkovn@gmail.com)
 */
+
 @import url(http://fonts.googleapis.com/css?family=Alex+Brush);
 @font-face {
   font-family: 'ticking_timebomb_bb';
@@ -111,7 +112,7 @@ body {
   height: 607px;
   margin: 0 15px;
   padding: 15px;
-  background: #ffffff url(http://calculator.local/css/big-bumaga_dlya_akvareli.jpg) repeat;
+  background: #ffffff url(http://localhost:8000/css/big-bumaga_dlya_akvareli.jpg) repeat;
   overflow: auto;
 }
 #calculator .calc-history h3 {
