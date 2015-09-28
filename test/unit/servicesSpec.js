@@ -26,7 +26,7 @@ describe('CalculatorApp services', function () {
             });
         })(exp);
 
-        exp = ['10 + 3 = 13', '1', '-'];
+        exp = ['10 + 3 = 13', '1', '-', '10 ÷ 0 = ∞'];
         (function (exp) {
             exp.forEach(function (s) {
                 it('should return "" for backSpace method', function () {
@@ -422,6 +422,41 @@ describe('CalculatorApp services', function () {
             });
         })(exp);
 
+        exp = '3 ÷ 0 = ∞';
+        (function(exp) {
+            button = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '(', '-'];
+            (function (exp, button) {
+                button.forEach(function (a) {
+                    it('shoud return "' + a + '" for update method', function () {
+                        expect(result.update(exp, a)).toBe(a);
+                    });
+                });
+            })(exp, button);
+
+            button = ['+', '×', '÷'];
+            (function (exp, button) {
+                button.forEach(function (a) {
+                    it('shoud return "0 ' + a + ' " for update method', function () {
+                        expect(result.update(exp, a)).toBe('0 ' + a + ' ');
+                    });
+                });
+            })(exp, button);
+
+            button = '.';
+            (function (exp, button) {
+                it('shoud return "0 ' + button + ' " for update method', function () {
+                    expect(result.update(exp, button)).toBe('0' + button);
+                });
+            })(exp, button);
+
+            button = ')';
+            (function (exp, button) {
+                it('shoud return "' + exp + '" for update method', function () {
+                    expect(result.update(exp, button)).toBe(exp);
+                });
+            })(exp, button);
+        })(exp);
+
         exp = ['1 + 2', '1 - 2', '1 + (1.5 + 2)', '(1.5 + 2) - 5', '1 + (-3)'];
         (function (exp) {
             exp.forEach(function (e) {
@@ -436,7 +471,7 @@ describe('CalculatorApp services', function () {
     describe('Service "calculate"', function () {
         var calculate,
             exp_good = ['1 + 2', '1 - 2', '1 + (1.5 + 2)', '(1.5 + 2) - 5', '1 + (-3)', '1 + (1 + 1) - (1 + 1)'],
-            exp_bad = ['', '1', '1 + ', '1 + (1.5 + 2', '(1.5 + 2) -', '1 + (-3', '1 + (1 + 1) - (1 + 1'],
+            exp_bad = ['', '1', '1 + ', '1 + (1.5 + 2', '(1.5 + 2) -', '1 + (-3', '1 + (1 + 1) - (1 + 1', '2 + 3 = 5', '3 ÷ 0 = ∞'],
             simple_exp = [{
                     exp: '1 + 1',
                     res: '2'
@@ -475,11 +510,11 @@ describe('CalculatorApp services', function () {
                 },
                 {
                     exp: '5 ÷ 0',
-                    res: 'Infinity'
+                    res: '∞'
                 },
                 {
                     exp: '2 - 5 ÷ 0',
-                    res: 'Infinity'
+                    res: '∞'
                 },
                 {
                     exp: '6 ÷ 3 + 2',
@@ -507,7 +542,7 @@ describe('CalculatorApp services', function () {
                 },
                 {
                     exp: '5 ÷ ((-2) + 2)',
-                    res: 'Infinity'
+                    res: '∞'
                 }];
 
         beforeEach(function () {

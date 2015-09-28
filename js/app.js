@@ -24,7 +24,7 @@ calculatorApp.constant('reg', {
     regCloseBracket: /\)/g,
     regOpenBracketIsLast: /\($/,
     regExpInBrackets: /(\([^()]+\))/,
-    regIsCalculated: /\s=\s\-?[0-9]+\.?[0-9]*$/,
+    regIsCalculated: /\s=\s\-?[0-9∞]+\.?[0-9]*$/,
     regOperatorIsLast: /(\s[+-×÷]\s)$/,
     regMinusIsLast: /\-$/,
     regDotIsLast: /(\.)$/
@@ -71,7 +71,7 @@ calculatorApp.service('result', ['reg', function (reg) {
                 case '÷':
                 case '=':
                     if (reg.regIsCalculated.test(exp)) {
-                        exp = exp.replace(/^.+=\s/, '');
+                        exp = exp.replace(/^.+=\s/, '').replace('∞', '0');
                     }
                     exp = exp.replace(reg.regMinusIsLast, '');
                     if (a != '-') {
@@ -203,8 +203,8 @@ calculatorApp.service('calculate', ['reg', 'result', function (reg, result) {
              */
             function oneOperation(i) {
                 // Checking if division by zero was
-                if (exp[i - 1] == 'Infinity' || exp[i + 1] == 'Infinity') {
-                    exp[i - 1] = 'Infinity';
+                if (exp[i - 1] == '∞' || exp[i + 1] == '∞') {
+                    exp[i - 1] = '∞';
                 }
                 else {
                     //Calculating with floating error considering
@@ -231,7 +231,7 @@ calculatorApp.service('calculate', ['reg', 'result', function (reg, result) {
                             exp[i - 1] = '' + ((parseFloat(exp[i - 1]) * k) * (parseFloat(exp[i + 1]) * k)) / (k * k);
                             break;
                         case '÷':
-                            exp[i - 1] = exp[i + 1] == '0' ? 'Infinity' : ('' + ((parseFloat(exp[i - 1]) * k) / (parseFloat(exp[i + 1]) * k)));
+                            exp[i - 1] = exp[i + 1] == '0' ? '∞' : ('' + ((parseFloat(exp[i - 1]) * k) / (parseFloat(exp[i + 1]) * k)));
                             break;
                         case '+':
                             exp[i - 1] = '' + ((parseFloat(exp[i - 1]) * k) + (parseFloat(exp[i + 1]) * k)) / k;
